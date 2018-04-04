@@ -7,11 +7,11 @@ parameters.Padding = 256;
 if exist(strcat(parameters.Folder,'Figures')) == 0
     mkdir(strcat(parameters.Folder,'Figures'));
 end
-
+%MERGETEST1
 s3 = false;
 shift = false;
 IntN = 1;
-conditions.G = 2.7; 
+conditions.G = 2.7; %MERGETEST2
 conditions.FixG = false; % replace fixG
 conditions.FitPhase = false; % replace FitPhase
 refshift = 1594.2;
