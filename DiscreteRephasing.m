@@ -28,6 +28,7 @@ data = data(1+(IntN-1)*IntTime:IntN*IntTime,:); % This line is only meaningful i
 %Merge (from branch Master to sub branch)
 data = Sense(data); % Multiplies FWM and Linear signal by their respective sensitivities
 tauSteps = length(unique(data(:,5)));
+%Change in Eric branch
 tSteps = length(unique(data(:,7)));
 pos.t= unique(data(:,8));
 pos.T = unique(data(:,4));
