@@ -8,6 +8,7 @@ if exist(strcat(parameters.Folder,'Figures')) == 0
     mkdir(strcat(parameters.Folder,'Figures'));
 end
 %MERGETEST1
+%MERGETEST4
 s3 = false;
 shift = false;
 IntN = 1;
