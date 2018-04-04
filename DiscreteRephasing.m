@@ -33,6 +33,7 @@ pos.T = unique(data(:,4));
 fprintf('hi')
 [pos.tau,idxShort,idxLong] = unique(data(:,6)); % rename idxShort and idxLong to be more intuitive
 offsetX = mean(data(:,9));
+% Change made in master branch
 offsetY = mean(data(:,11));
 procDataT = zeros(tSteps, 8, tauSteps);
 procData = zeros(tSteps, 8, tauSteps);
