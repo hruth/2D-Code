@@ -2,20 +2,19 @@ function [linewidths,fits] = fitSimultaneous(projections,linewidths,fits,slices,
 %[linewidths,fits] = fitSimultaneous(projections.Homo,projections.Inhomo,linewidths,fits)
 % This works as of 3/14/2018 when fixG, fitPhase = false. Haven't tested
 % for other conditions yet. 
-G = 2.7 % What is G?
 peak = pkRatio(slices,linewidths,projections);
 if conditions.FitPhase && conditions.FixG
      Ax = [real(slices.HomoC') real(slices.InhomoC') imag(slices.HomoC') imag(slices.InhomoC')];
-     simultaneous = @(a,x) TO2X0hilbert(a,x,length(projections.Homo),length(projections.Inhomo),G);
+     simultaneous = @(a,x) TO2X0hilbert(a,x,length(projections.Homo),length(projections.Inhomo),conditions.G);
      initialParameters = real([linewidths.Lorentzian peaks.Inhomo linewidths.GaussianAsyCenter 0 peaks.Homo 3 angle(sum(slices.InhomoC)) -0.58 2.55]); %linewidths.GaussianAsy]);
 else
     Ax = [slices.Homo' slices.Inhomo'];
     X = [projections.Homo projections.Inhomo];
         if conditions.FixG
             initialParameters = real([linewidths.Lorentzian peaks.Inhomo linewidths.GaussianAsyCenter 0 peaks.Homo linewidths.LorentzianCenter]); %linewidths.GaussianAsy]);
-            simultaneous = @(a,x) TO2X0fixG(a,x,length(projections.Homo),length(projections.Inhomo),G);
+            simultaneous = @(a,x) TO2X0fixG(a,x,length(projections.Homo),length(projections.Inhomo),conditions.G);
         else 
-            simultaneous = @(a,x) TO2X0(a,x,length(projections.Homo),length(projections.Inhomo),G);
+            simultaneous = @(a,x) TO2X0(a,x,length(projections.Homo),length(projections.Inhomo),conditions.G);
             initialParameters = [linewidths.Lorentzian peak.Inhomo linewidths.GaussianAsyCenter 0 peak.Homo linewidths.LorentzianCenter linewidths.GaussianAsy];
         end
 end
