@@ -9,6 +9,7 @@ if exist(strcat(parameters.Folder,'Figures')) == 0
 end
 %hello
 s3 = false;
+%hi
 shift = false;
 IntN = 1;
 conditions.G = 2.7; 
