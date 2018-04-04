@@ -17,6 +17,7 @@ refshift = 1594.2;
 underS = 2; 
 shape = 2; % box: 0, decay: 1, echo: 2
 data = csvread(strcat(parameters.Folder,'XCorrPP',parameters.Run,'.csv'),1,0);
+%hellooooo1
 %% Section into different pre-pulse scans
 numInt = length(unique(data(:,19))); % Gives number of unique LC voltages/ pre pulse powers
 IntTime = length(find(data(:,19) == data(1,19))); % Note that this works on the assumption that the number of steps is the same for each LC voltage
