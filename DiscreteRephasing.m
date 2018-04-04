@@ -7,9 +7,7 @@ parameters.Padding = 256;
 if exist(strcat(parameters.Folder,'Figures')) == 0
     mkdir(strcat(parameters.Folder,'Figures'));
 end
-%hello
 s3 = false;
-%hi
 shift = false;
 IntN = 1;
 conditions.G = 2.7; 
@@ -19,23 +17,19 @@ refshift = 1594.2;
 underS = 2; 
 shape = 2; % box: 0, decay: 1, echo: 2
 data = csvread(strcat(parameters.Folder,'XCorrPP',parameters.Run,'.csv'),1,0);
-
 %% Section into different pre-pulse scans
 numInt = length(unique(data(:,19))); % Gives number of unique LC voltages/ pre pulse powers
 IntTime = length(find(data(:,19) == data(1,19))); % Note that this works on the assumption that the number of steps is the same for each LC voltage
 data = data(1+(IntN-1)*IntTime:IntN*IntTime,:); % This line is only meaningful if there is more than one LC voltage
 %% Organize the data, add offsets, scale 
-%Merge (from branch Master to sub branch)
 data = Sense(data); % Multiplies FWM and Linear signal by their respective sensitivities
 tauSteps = length(unique(data(:,5)));
-%Change in Eric branch
 tSteps = length(unique(data(:,7)));
 pos.t= unique(data(:,8));
 pos.T = unique(data(:,4));
 fprintf('hi')
 [pos.tau,idxShort,idxLong] = unique(data(:,6)); % rename idxShort and idxLong to be more intuitive
 offsetX = mean(data(:,9));
-% Change made in master branch
 offsetY = mean(data(:,11));
 procDataT = zeros(tSteps, 8, tauSteps);
 procData = zeros(tSteps, 8, tauSteps);
