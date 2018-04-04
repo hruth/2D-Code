@@ -7,20 +7,17 @@ parameters.Padding = 256;
 if exist(strcat(parameters.Folder,'Figures')) == 0
     mkdir(strcat(parameters.Folder,'Figures'));
 end
-%MERGETEST1
-%MERGETEST4
+%hello
 s3 = false;
 shift = false;
 IntN = 1;
-%MERGETEST5
-conditions.G = 2.7; %MERGETEST2
+conditions.G = 2.7; 
 conditions.FixG = false; % replace fixG
 conditions.FitPhase = false; % replace FitPhase
 refshift = 1594.2;
 underS = 2; 
 shape = 2; % box: 0, decay: 1, echo: 2
 data = csvread(strcat(parameters.Folder,'XCorrPP',parameters.Run,'.csv'),1,0);
-%MergeTest3
 %% Section into different pre-pulse scans
 numInt = length(unique(data(:,19))); % Gives number of unique LC voltages/ pre pulse powers
 IntTime = length(find(data(:,19) == data(1,19))); % Note that this works on the assumption that the number of steps is the same for each LC voltage
