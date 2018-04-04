@@ -11,6 +11,7 @@ end
 s3 = false;
 shift = false;
 IntN = 1;
+%MERGETEST5
 conditions.G = 2.7; %MERGETEST2
 conditions.FixG = false; % replace fixG
 conditions.FitPhase = false; % replace FitPhase
