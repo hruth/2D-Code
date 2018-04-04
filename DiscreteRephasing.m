@@ -25,6 +25,7 @@ numInt = length(unique(data(:,19))); % Gives number of unique LC voltages/ pre p
 IntTime = length(find(data(:,19) == data(1,19))); % Note that this works on the assumption that the number of steps is the same for each LC voltage
 data = data(1+(IntN-1)*IntTime:IntN*IntTime,:); % This line is only meaningful if there is more than one LC voltage
 %% Organize the data, add offsets, scale 
+%Merge (from branch Master to sub branch)
 data = Sense(data); % Multiplies FWM and Linear signal by their respective sensitivities
 tauSteps = length(unique(data(:,5)));
 tSteps = length(unique(data(:,7)));
