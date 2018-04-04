@@ -11,12 +11,12 @@ end
 s3 = false;
 shift = false;
 IntN = 1;
-G = 2.7; 
+conditions.G = 2.7; 
 conditions.FixG = false; % replace fixG
 conditions.FitPhase = false; % replace FitPhase
 refshift = 1594.2;
 underS = 2; 
-shape = 2; %box: 0, decay: 1, echo: 2
+shape = 2; % box: 0, decay: 1, echo: 2
 data = csvread(strcat(parameters.Folder,'XCorrPP',parameters.Run,'.csv'),1,0);
 %% Section into different pre-pulse scans
 numInt = length(unique(data(:,19))); % Gives number of unique LC voltages/ pre pulse powers
@@ -132,7 +132,7 @@ generate2Dplot(plot2DFWM,parameters,false)
 %% Fit to Different Types of Lorentzians
 [linewidths,fits] = fitLorentzian(slices,projections); 
 %% Simulatenously fit the diagonal and anti-diagonal lineshapes for moderate inhomogeneity
-[linewidths,fits] = fitSimultaneous(projections,linewidths,fits,slices,conditions,false); %I believe this is complete, but I have only tested it for fixG = false, fitPhase=false;
+[linewidths,fits] = fitSimultaneous(projections,linewidths,fits,slices,conditions,false); % I believe this is complete, but I have only tested it for fixG = false, fitPhase=false;
 %% Plot Inhomogenous and Homogenous Slices with Simultaneous Fits
 figure, 
 subplot(1,2,1)
