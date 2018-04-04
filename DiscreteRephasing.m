@@ -7,6 +7,7 @@ parameters.Padding = 256;
 if exist(strcat(parameters.Folder,'Figures')) == 0
     mkdir(strcat(parameters.Folder,'Figures'));
 end
+% if you pull this should show up
 s3 = false;
 shift = false;
 IntN = 1;
