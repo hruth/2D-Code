@@ -1,7 +1,7 @@
 %%
 clear all;
-parameters.Run = ['079'];
-parameters.Folder = 'C:\Users\Hanna\Documents\MATLAB\Research\2018-2\2-21\'; 
+parameters.Run = ['003'];
+parameters.Folder = 'C:\Users\Hanna\Downloads\'; 
 parameters.Sensitivity = 1;
 parameters.Padding = 256;
 if exist(strcat(parameters.Folder,'Figures')) == 0
@@ -27,7 +27,6 @@ tauSteps = length(unique(data(:,5)));
 tSteps = length(unique(data(:,7)));
 pos.t= unique(data(:,8));
 pos.T = unique(data(:,4));
-fprintf('hi')
 [pos.tau,idxShort,idxLong] = unique(data(:,6)); % rename idxShort and idxLong to be more intuitive
 offsetX = mean(data(:,9));
 offsetY = mean(data(:,11));
@@ -60,12 +59,14 @@ phase(1) = -atan2(procDataT(1,7,1),procDataT(1,5,1)); % Linear Signal phase
         procData(:,7,I) = procDataT(:,5,I)*sin(phase(1))+procDataT(:,7,I)*cos(phase(1)); %Linear X Linear Y % Imaginary part
         end
     end
-FWM.Real = procData(:,1,:); FWM.Imaginary = procData(:,3,:);
+FWM.Real = (procData(:,1,:)); FWM.Imaginary =(procData(:,3,:));
 Linear.Real = procData(:,5,:); Linear.Imaginary = procData(:,7,:);
-FWM.Complex = FWM.Real + j*FWM.Imaginary;
-Linear.Complex = Linear.Real + j*Linear.Imaginary;
+FWM.Complex = squeeze(FWM.Real + j*FWM.Imaginary);
+Linear.Complex = squeeze(Linear.Real + j*Linear.Imaginary);
+%%
+s = @(t,tau,a,b,w) exp(-a*t*2^0.5 + j*w*tau*2^0.5 + b^2*t^2);
 %% Make Time-Time Plots
-timePlot(procData,parameters,pos,false)
+timePlot(procData,parameters,pos,FWM,false)
 %% Windowing that I do not understand
 w1D = zeros(parameters.Padding,parameters.Padding);%tukeywin(2*parameters.Padding);
 w1D(:,:) = 1;
