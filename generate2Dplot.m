@@ -17,7 +17,7 @@ set(gca,'YDir','normal');
 colorbar; 
 axis square
 if saveFig
-    print(strcat(parameters.Folder,'savedFigures\Run',num2str(parameters.Run),'Absolute'),'-dpdf')        
+    print(strcat(parameters.Folder,'Figures\Run',num2str(parameters.Run),'Absolute'),'-dpdf')        
 end
 
 % subplot(1,2,2) 
@@ -31,7 +31,7 @@ set(gca,'YDir','normal'); %'FontSize',14,'
 colorbar;
 axis square
 if saveFig
-    print(strcat(parameters.Folder,'savedFigures\Run',num2str(parameters.Run),'Real'),'-dpdf')        
+    print(strcat(parameters.Folder,'Figures\Run',num2str(parameters.Run),'Real'),'-dpdf')        
 end
 end
 

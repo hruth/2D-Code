@@ -1,8 +1,8 @@
 %%
 clear all;
-parameters.Run = ['001'];
+parameters.Run = ['006'];
 % parameters.Folder = 'C:\Users\Hanna\Downloads\'; 
-parameters.Folder = 'D:\Eric\Data\2018\2018-08-31\'
+parameters.Folder = 'D:\Eric\Data\2018\2018-05-08\'
 parameters.Sensitivity = 1;
 parameters.Padding = 256;
 if exist(strcat(parameters.Folder,'Figures')) == 0
@@ -14,8 +14,8 @@ IntN = 1;
 conditions.G = 2.7; 
 conditions.FixG = false; % replace fixG
 conditions.FitPhase = false; % replace FitPhase
-refshift = 1589;
-underS = 0; 
+refshift = 1594.2;
+underS = 1; 
 shape = 2; % box: 0, decay: 1, echo: 2
 data = csvread(strcat(parameters.Folder,'XCorrPP',parameters.Run,'.csv'),1,0);
 %% Section into different pre-pulse scans
@@ -67,7 +67,7 @@ Linear.Complex = squeeze(Linear.Real + j*Linear.Imaginary);
 %%
 s = @(t,tau,a,b,w) exp(-a*t*2^0.5 + j*w*tau*2^0.5 + b^2*t^2);
 %% Make Time-Time Plots
-timePlot(procData,parameters,pos,FWM,true)
+%timePlot(procData,parameters,pos,FWM,false)
 %% Windowing that I do not understand
 w1D = zeros(parameters.Padding,parameters.Padding);%tukeywin(2*parameters.Padding);
 w1D(:,:) = 1;
@@ -140,7 +140,7 @@ figure,
 subplot(1,2,1)
 hold on
 plot(projections.Homo+freq(21)+refshift,slices.Homo);
-% plot(projections.Homo+freq(21)+refshift,fits.SHomo);
+plot(projections.Homo+freq(21)+refshift,fits.SHomo);
 set(gca,'FontSize',9);
 xlabel('\omega_t (meV)')
 axis square
