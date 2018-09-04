@@ -1,32 +1,37 @@
-Run = '013'
-folder_h = 'D:\Hanna\Fits\2017\8-17-17\Mat Data\';
-linewidthsFile = strcat(folder_h,'FittedLinewidths_Run',num2str(Run),'.mat');
-load(linewidthsFile);
+function [] = plotLinewidths(signal,linewidths,slices,fits,axes,parameters,saveFig)
+% plotLinewidths calculates the horizontal shift off axis and plots
+% lineshapes with fits
+%% Get horizontal shift for homo
+i = length(signal.Absolute)-axes.tauMax; 
+diagonalPoint = [1+i,256-i]; 
+maxPoint = [axes.tMax,axes.tauMax]; 
+meV = parameters.Reference(2)-parameters.Reference(1);
+roughShift = meV*(maxPoint(1) - diagonalPoint(1)); % gives detuning of the maximum from the diagonal line
+fineShift = fits.SimulCenter; 
+finalShift = roughShift + fineShift; 
+%% Get right axes for inhomo
+[itau,it] =ind2sub(size(signal.Absolute),find (signal.Absolute == max(slices.Inhomo)));
+%%
+figure, 
+subplot(1,2,1)
+    hold on
+    plot(axes.Homo+roughShift,slices.Homo);
+    plot(axes.Homo+roughShift,fits.SHomo);
+    set(gca,'FontSize',9);
+    xlabel('Emission Detuning from Diagonal (meV)') % should probably change this to something more like omega_t - omega diag???
+    axis square
+    title(strcat('\gamma = ',num2str(linewidths.Simultaneous),' meV .. shift = ',num2str(finalShift)))
+    hold off
+subplot(1,2,2)
+    hold on
+    plot(axes.Inhomo+parameters.Reference(it), slices.Inhomo);
+    plot(axes.Inhomo+parameters.Reference(it), fits.SInhomo);
+    set(gca,'FontSize',9);
+    xlabel('\omega_t (meV)')
+    axis square
+    hold off
+if saveFig
+    print(strcat(parameters.Folder,'Figures\',num2str(parameters.Run),'_Lineshapes'),'-dpdf')        
+end
+end
 
-%%
-numInt = 4;
-figure
-hold on
-plot(sHomo(1:numInt),'*')
-plot(aHomo(1:numInt),'*')
-plot(abs(dHomo(1:numInt)),'*')
-legend('Simultaneous Fit','Anti-Diagonal Fit','Diagonal Fit')
-legend('Location','NorthOutside')
-xlabel('Prepulse (uW)')
-ylabel('linewidth (meV)')
-title('Homogenous Linewidths')
-axis square
-hold off
-%%
-figure
-hold on
-plot(sInhomo(1:numInt),'*')
-plot(aInhomo(1:numInt),'*')
-plot(abs(dInhomo(1:numInt)),'*')
-legend('Simultaneous Fit','Anti-Diagonal Fit','Diagonal Fit')
-legend('Location','NorthOutside')
-xlabel('Prepulse Iteration')
-ylabel('linewidth (uW)')
-title('Inhomogenous Linewidths')
-axis square
-hold off

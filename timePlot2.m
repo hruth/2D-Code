@@ -1,4 +1,4 @@
-function [] = timePlot(procData,parameters,pos,FWM,saveFig)
+function [] = timePlot2(procData,parameters,pos,FWM,saveFig)
 %Generate time-time plots
 %%
 figure, hold on
@@ -7,12 +7,12 @@ imagesc(pos.t,pos.tau,transpose(squeeze(procData(:,3,:))/parameters.Sensitivity)
 ylabel('\tau (ps)'); xlabel('t (ps)');
 axis square
 subplot(1,2,2)
-imagesc(pos.t,pos.tau,abs((FWM.Complex)/parameters.Sensitivity))
+imagesc(pos.t,pos.tau,abs(transpose(FWM.Complex)/parameters.Sensitivity))
 ylabel('\tau (ps)'); xlabel('t (ps)');
 axis square
 hold off
 if saveFig
-    print(strcat(parameters.Folder,'\Figures\',num2str(parameters.Run),'_TimeTime'),'-dpdf')
+    print(strcat(parameters.Folder,'\savedFigures\TimeTimeRun',num2str(parameters.Run)),'-fig')
 end
 end
 

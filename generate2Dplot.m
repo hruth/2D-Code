@@ -5,6 +5,7 @@ function [] = generate2Dplot(signal,parameters,saveFig)
 % Title - self explanatory
 % Savefig - True to save, false otherwise
 %%
+
 figure,
 % subplot(1,2,1)
 imagesc(parameters.Reference,parameters.TauReference,(signal.Absolute)/parameters.Sensitivity);
@@ -17,9 +18,9 @@ set(gca,'YDir','normal');
 colorbar; 
 axis square
 if saveFig
-    print(strcat(parameters.Folder,'savedFigures\Run',num2str(parameters.Run),'Absolute'),'-dpdf')        
+    print(strcat(parameters.Folder,'Figures\',num2str(parameters.Run),'_2DAbsolute'),'-dpdf')        
 end
-
+%%
 % subplot(1,2,2) 
 figure,
 imagesc(parameters.Reference,parameters.TauReference,(signal.Real)/parameters.Sensitivity);
@@ -31,7 +32,7 @@ set(gca,'YDir','normal'); %'FontSize',14,'
 colorbar;
 axis square
 if saveFig
-    print(strcat(parameters.Folder,'savedFigures\Run',num2str(parameters.Run),'Real'),'-dpdf')        
+    print(strcat(parameters.Folder,'Figures\',num2str(parameters.Run),'_2DReal'),'-dpdf')        
 end
 end
 

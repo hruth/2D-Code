@@ -1,28 +1,32 @@
-function [slices,projections,tauMaxIndex,tMaxIndex] = sigWindow(parameters, nonlinearSignals)
-%[slices,projections,tauMaxIndex,tMaxIndex] = sigWindow(parameters, nonlinearSignals) gets variables for creating a suitable window for
+function [slices,axes] = sigWindow(parameters, nonlinearSignals)
+%[slices,axes,axes.tauMax,axes.tMax] = sigWindow(parameters, nonlinearSignals) gets variables for creating a suitable window for
 %the 2D plot as well as returning diagonal and cross diagonal slices. 
 %%
- [M,I] = max(nonlinearSignals.Absolute(:)); [tauMaxIndex,tMaxIndex] = ind2sub(size(nonlinearSignals.Absolute),I); % Find peak location
+%  nonlinearSignals.Real = plot2DFWM.Real
+%  nonlinearSignals.Imaginary = plot2DFWM.Imaginary
+%  nonlinearSignals.Absolute = plot2DFWM.Absolute
+%%cd 
+ [M,I] = max(nonlinearSignals.Absolute(:)); [axes.tauMax,axes.tMax] = ind2sub(size(nonlinearSignals.Absolute),I); % Find peak location
 homo = [1,1;parameters.Padding,parameters.Padding];
-maxDiff = abs(tMaxIndex-tauMaxIndex);  maxSum = tMaxIndex+tauMaxIndex;
+maxDiff = abs(axes.tMax-axes.tauMax);  maxSum = axes.tMax+axes.tauMax;
 Length = parameters.Padding-maxDiff;
 s = size(nonlinearSignals.Absolute);
 slices.Homo = zeros(Length, 1); slices.HomoC = zeros(Length, 1);
 % Xline = linspace(parameters.Reference(1),parameters.Reference(parameters.Padding),parameters.Padding);
 % Yline = linspace(parameters.TauReference(1),parameters.TauReference(parameters.Padding),parameters.Padding);
 % the coordinates [tau,t] will give you some pt on the two lines
-if tMaxIndex <= tauMaxIndex %this one is false
-    homo = [1+maxDiff 1; parameters.Padding parameters.Padding+maxDiff]   
+if axes.tMax <= axes.tauMax %this one is false
+    homo = [1+maxDiff 1; parameters.Padding parameters.Padding+maxDiff];
     X=maxDiff; Y=0;
-elseif tMaxIndex >= tauMaxIndex 
-    homo = [1 1+maxDiff; parameters.Padding-maxDiff parameters.Padding]
+elseif axes.tMax >= axes.tauMax 
+    homo = [1 1+maxDiff; parameters.Padding-maxDiff parameters.Padding];
     X=0; Y=maxDiff; % Gives the starting index of the cross-diagonal slice
 end
   slices.Homo(1:Length) = nonlinearSignals.Absolute(sub2ind(size(nonlinearSignals.Absolute),X+(1:Length),Y+(1:Length)));
   slices.HomoC(1:Length) = nonlinearSignals.Real(sub2ind(size(nonlinearSignals.Absolute),X+(1:Length),Y+(1:Length))) + 1i*nonlinearSignals.Imaginary(sub2ind(size(nonlinearSignals.Absolute),X+(1:Length),Y+(1:Length)));
-  line.Start = -abs(homo(1,1)-tauMaxIndex); line.End = abs(homo(2,1)-tauMaxIndex);
-  projections.Homo = (parameters.Frequency(2)-parameters.Frequency(1))*linspace(line.Start,line.End,Length);
-%   projections.Homo = (parameters.Frequency(2)-parameters.Frequency(1))*linspace(line.Start,line.End,Length);
+  line.Start = -abs(homo(1,1)-axes.tauMax); line.End = abs(homo(2,1)-axes.tauMax);
+  axes.Homo = (parameters.Frequency(2)-parameters.Frequency(1))*linspace(line.Start,line.End,Length);
+%   axes.Homo = (parameters.Frequency(2)-parameters.Frequency(1))*linspace(line.Start,line.End,Length);
 %%
   %inhomo
     if maxSum >= parameters.Padding+1  
@@ -36,8 +40,8 @@ end
     end
         slices.Inhomo(1:Length) = nonlinearSignals.Absolute(sub2ind(s,X-(1:Length),Y+(1:Length)));
         slices.InhomoC(1:Length) = nonlinearSignals.Real(sub2ind(s,X-(1:Length),Y+(1:Length))) + 1i*nonlinearSignals.Imaginary(sub2ind(s,X-(1:Length),Y+(1:Length)));
-        line.Start = -abs(inhomo(1,1)-tauMaxIndex); line.End = abs(homo(2,1)-tauMaxIndex);
-        projections.Inhomo = (parameters.Frequency(2)-parameters.Frequency(1))*linspace(line.Start,line.End,Length);
+        line.Start = -abs(inhomo(1,1)-axes.tauMax); line.End = abs(inhomo(2,1)-axes.tauMax);
+        axes.Inhomo = (parameters.Frequency(2)-parameters.Frequency(1))*linspace(line.Start,line.End,Length);
 
 end
 

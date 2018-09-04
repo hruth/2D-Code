@@ -1,7 +1,15 @@
 %%
 clear all;
+% for k = 1:23;
+% clearvars -except k
+% if k < 10
+%     run = strcat('00',num2str(k));
+% else
+%     run = strcat('0',num2str(k));
+% end 
 parameters.Run = ['003'];
-parameters.Folder = 'C:\Users\Hanna\Downloads\'; 
+date = '5-8-2018';
+parameters.Folder = filePath(date);
 parameters.Sensitivity = 1;
 parameters.Padding = 256;
 if exist(strcat(parameters.Folder,'Figures')) == 0
@@ -23,8 +31,10 @@ IntTime = length(find(data(:,19) == data(1,19))); % Note that this works on the 
 data = data(1+(IntN-1)*IntTime:IntN*IntTime,:); % This line is only meaningful if there is more than one LC voltage
 %% Organize the data, add offsets, scale 
 data = Sense(data); % Multiplies FWM and Linear signal by their respective sensitivities
-tauSteps = length(unique(data(:,5)));
-tSteps = length(unique(data(:,7)));
+pos.tauSteps = unique(data(:,5));
+pos.tSteps = unique(data(:,7));
+tauSteps = length(pos.tauSteps);
+tSteps = length(pos.tSteps);
 pos.t= unique(data(:,8));
 pos.T = unique(data(:,4));
 [pos.tau,idxShort,idxLong] = unique(data(:,6)); % rename idxShort and idxLong to be more intuitive
@@ -66,7 +76,7 @@ Linear.Complex = squeeze(Linear.Real + j*Linear.Imaginary);
 %%
 s = @(t,tau,a,b,w) exp(-a*t*2^0.5 + j*w*tau*2^0.5 + b^2*t^2);
 %% Make Time-Time Plots
-timePlot(procData,parameters,pos,FWM,false)
+timePlot(procData,parameters,pos,FWM,true)
 %% Windowing that I do not understand
 w1D = zeros(parameters.Padding,parameters.Padding);%tukeywin(2*parameters.Padding);
 w1D(:,:) = 1;
@@ -87,7 +97,7 @@ w2Drep = repmat(w1D,1,tauSteps);
 %% Transform along t
 FWM.tComplex= fft(squeeze(FWM.Complex),parameters.Padding,1);  
 FWM.tReal = real(FWM.tComplex); FWM.tImaginary = imag(FWM.tComplex); % not phase shifted
-Linear.tComplex = fft(squeeze(Linear.Complex),parameters.Padding,1); %w2D was taken out. w2D is needed if the photon echo is taken out. 
+Linear.tComplex = fft(squeeze(Linear.Complex),parameters.Padding,1); % w2D was taken out. w2D is needed if the photon echo is taken out. 
 Linear.tReal = real(Linear.tComplex); Linear.tImaginary = imag(Linear.tComplex); % not phase shifted
 %% Gets phase of data (tau = 1, t = all); 
 phaseAll = -atan2(Linear.tImaginary(:,1), Linear.tReal(:,1)); % Uses only the first tau (because of photon echo shape) but would be ideal to use all the tau steps
@@ -97,9 +107,9 @@ FWM.tComplex = FWM.tReal.*cos(phase2All) - FWM.tImaginary.*sin(phase2All) + 1j*(
 Linear.Transformed = fft(Linear.tComplex,parameters.Padding,2); 
 FWM.Transformed = fft(FWM.tComplex,parameters.Padding,2);
 %%
-plot2DFWM = makeNice(FWM.Transformed,shift);
+signal = makeNice(FWM.Transformed,shift);
 plot2DLinear = makeNice(Linear.Transformed,shift);
-%% More things I do not understnad
+%% More things I do not understand
     tStepSize = pos.t(2)-pos.t(1); % newVar
     tauStepSize = pos.tau(2)-pos.tau(1);
     tEnergy = 4.1357/tStepSize;
@@ -112,9 +122,9 @@ plot2DLinear = makeNice(Linear.Transformed,shift);
     else % On currently. The vector has the same length as it would if shift = true, but is from 0 to 1 instead. 
             freq = BW*(linspace(1/(parameters.Padding+1),1,parameters.Padding));  %freq = tEnergy*(linspace(0,1,parameters.Padding)+1/parameters.Padding); % need to fix
             freqtau = -BW*(linspace(1,1/(parameters.Padding+1),parameters.Padding));
-            plot2DFWM.Real = circshift(plot2DFWM.Real,1,1);
-            plot2DFWM.Imaginary = circshift(plot2DFWM.Imaginary,1,1);
-            plot2DFWM.Absolute = circshift(plot2DFWM.Absolute,1,1);
+            signal.Real = circshift(signal.Real,1,1);
+            signal.Imaginary = circshift(signal.Imaginary,1,1);
+            signal.Absolute = circshift(signal.Absolute,1,1);
     end
     refshift = refshift+ underS*BW;
     freqref = freq+refshift; %takes the frequency and shifts it by 
@@ -127,33 +137,15 @@ parameters.Reference = freqref;
 parameters.TauReference = freqtauref;
 parameters.Frequency = freq;
 %% Generate Absolute and Real Plots
-generate2Dplot(plot2DFWM,parameters,false)
+generate2Dplot(signal,parameters,false)
 %% Making Appropriate Axes
-[slices,projections,~,~] = sigWindow(parameters,plot2DFWM);  
+[slices,axes] = sigWindow(parameters,signal);
 %% Fit to Different Types of Lorentzians
-[linewidths,fits] = fitLorentzian(slices,projections); 
+[linewidths,fits] = fitLorentzian(slices,axes);
 %% Simulatenously fit the diagonal and anti-diagonal lineshapes for moderate inhomogeneity
-[linewidths,fits] = fitSimultaneous(projections,linewidths,fits,slices,conditions,false); % I believe this is complete, but I have only tested it for fixG = false, fitPhase=false;
-%% Plot Inhomogenous and Homogenous Slices with Simultaneous Fits
-figure, 
-subplot(1,2,1)
-hold on
-plot(projections.Homo+freq(21)+refshift,slices.Homo);
-plot(projections.Homo+freq(21)+refshift,fits.SHomo);
-set(gca,'FontSize',9);
-xlabel('\omega_t (meV)')
-axis square
-title(strcat('\gamma = ',num2str(linewidths.Simultaneous),' meV'))
-hold off
-subplot(1,2,2)
-hold on
-plot(projections.Inhomo+freq(21)+refshift,slices.Inhomo);
-plot(projections.Inhomo+freq(21)+refshift,fits.SInhomo);
-set(gca,'FontSize',9);
-xlabel('\omega_t (meV)')
-axis square
-hold off
+[fittedParameters,linewidths,fits,X,Ax] = fitSimultaneous(axes,linewidths,fits,slices,conditions,false); % I believe this is complete, but I have only tested it for fixG = false, fitPhase=false;
+%% Get horizontal shift off axis and Plot Linewidths
+plotLinewidths(signal,linewidths,slices,fits,axes,parameters,false)
 %%
-
-
+%homo max at 8968
 

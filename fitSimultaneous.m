@@ -1,4 +1,4 @@
-function [linewidths,fits] = fitSimultaneous(projections,linewidths,fits,slices,conditions,saveFig)
+function [fittedParameters,linewidths,fits,X,Ax] = fitSimultaneous(projections,linewidths,fits,slices,conditions,saveFig)
 %[linewidths,fits] = fitSimultaneous(projections.Homo,projections.Inhomo,linewidths,fits)
 % This works as of 3/14/2018 when fixG, fitPhase = false. Haven't tested
 % for other conditions yet. 
@@ -13,18 +13,19 @@ else
         if conditions.FixG
             initialParameters = real([linewidths.Lorentzian peaks.Inhomo linewidths.GaussianAsyCenter 0 peaks.Homo linewidths.LorentzianCenter]); %linewidths.GaussianAsy]);
             simultaneous = @(a,x) TO2X0fixG(a,x,length(projections.Homo),length(projections.Inhomo),conditions.G);
-        else 
+        else %***
             simultaneous = @(a,x) TO2X0(a,x,length(projections.Homo),length(projections.Inhomo),conditions.G);
-            initialParameters = [linewidths.Lorentzian peak.Inhomo linewidths.GaussianAsyCenter 0 peak.Homo linewidths.LorentzianCenter linewidths.GaussianAsy];
+            initialParameters = [linewidths.Lorentzian 2.8*peak.Inhomo linewidths.GaussianAsyCenter 0 peak.Homo linewidths.LorentzianCenter linewidths.GaussianAsy];
         end
 end
-opts = statset('nlinfit'); opts.FunValCheck = 'off';
+opts.FunValCheck = 'off'; opts.MaxIter = 100;
 [fittedParameters, ~, ~, covariance, ~] = nlinfit(X,Ax,simultaneous,initialParameters,opts);
 linewidths.Simultaneous = fittedParameters(1);
 linewidths.SimultaneousError = sqrt(diag(covariance));
 fits.Simultaneous = simultaneous(fittedParameters,X); 
 fits.SHomo = fits.Simultaneous(1:length(slices.Homo));
 fits.SInhomo = fits.Simultaneous( (length(slices.Homo)+1):length(fits.Simultaneous));
+fits.SimulCenter = fittedParameters(6);
 %% Plot Inhomogenous and Homogenous Slices with Simultaneous Fits
 % figure, 
 % subplot(1,2,1)
