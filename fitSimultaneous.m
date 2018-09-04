@@ -13,7 +13,7 @@ else
         if conditions.FixG
             initialParameters = real([linewidths.Lorentzian peaks.Inhomo linewidths.GaussianAsyCenter 0 peaks.Homo linewidths.LorentzianCenter]); %linewidths.GaussianAsy]);
             simultaneous = @(a,x) TO2X0fixG(a,x,length(projections.Homo),length(projections.Inhomo),conditions.G);
-        else %***
+        else % turned on
             simultaneous = @(a,x) TO2X0(a,x,length(projections.Homo),length(projections.Inhomo),conditions.G);
             initialParameters = [linewidths.Lorentzian 2.8*peak.Inhomo linewidths.GaussianAsyCenter 0 peak.Homo linewidths.LorentzianCenter linewidths.GaussianAsy];
         end
