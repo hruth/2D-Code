@@ -1,10 +1,8 @@
 %%
 clear all;
-<<<<<<< HEAD
-
-parameters.Run = ['001'];
-% parameters.Folder = 'C:\Users\Hanna\Downloads\'; 
-parameters.Folder_LAB = 'D:\Eric\Data\2018\2018-08-31\'
+parameters.Run = ['003'];
+ parameters.Folder = 'C:\Users\Hanna\Downloads\'; 
+% parameters.Folder_LAB = 'D:\Eric\Data\2018\2018-08-31\'
 parameters.Sensitivity = 1;
 parameters.Padding = 256;
 if exist(strcat(parameters.Folder,'Figures')) == 0
@@ -102,7 +100,7 @@ FWM.tComplex = FWM.tReal.*cos(phase2All) - FWM.tImaginary.*sin(phase2All) + 1j*(
 Linear.Transformed = fft(Linear.tComplex,parameters.Padding,2); 
 FWM.Transformed = fft(FWM.tComplex,parameters.Padding,2);
 %%
-signal = makeNice(FWM.Transformed,shift);
+plot2DFWM = makeNice(FWM.Transformed,shift);
 plot2DLinear = makeNice(Linear.Transformed,shift);
 %% More things I do not understand
     tStepSize = pos.t(2)-pos.t(1); % newVar
@@ -117,9 +115,9 @@ plot2DLinear = makeNice(Linear.Transformed,shift);
     else % On currently. The vector has the same length as it would if shift = true, but is from 0 to 1 instead. 
             freq = BW*(linspace(1/(parameters.Padding+1),1,parameters.Padding));  %freq = tEnergy*(linspace(0,1,parameters.Padding)+1/parameters.Padding); % need to fix
             freqtau = -BW*(linspace(1,1/(parameters.Padding+1),parameters.Padding));
-            signal.Real = circshift(signal.Real,1,1);
-            signal.Imaginary = circshift(signal.Imaginary,1,1);
-            signal.Absolute = circshift(signal.Absolute,1,1);
+            plot2DFWM.Real = circshift(plot2DFWM.Real,1,1);
+            plot2DFWM.Imaginary = circshift(plot2DFWM.Imaginary,1,1);
+            plot2DFWM.Absolute = circshift(plot2DFWM.Absolute,1,1);
     end
     refshift = refshift+ underS*BW;
     freqref = freq+refshift; %takes the frequency and shifts it by 
@@ -134,32 +132,31 @@ parameters.Frequency = freq;
 %% Generate Absolute and Real Plots
 generate2Dplot(plot2DFWM,parameters,true)
 %% Making Appropriate Axes
-[slices,axes] = sigWindow(parameters,signal);
+[slices,axes] = sigWindow(parameters,plot2DFWM);
 %% Fit to Different Types of Lorentzians
 [linewidths,fits] = fitLorentzian(slices,axes);
 %% Simulatenously fit the diagonal and anti-diagonal lineshapes for moderate inhomogeneity
-[fittedParameters,linewidths,fits,X,Ax] = fitSimultaneous(axes,linewidths,fits,slices,conditions,false); % I believe this is complete, but I have only tested it for fixG = false, fitPhase=false;
+% Something is wrong with the pkRatio function
+%[fittedParameters,linewidths,fits,X,Ax] = fitSimultaneous(axes,linewidths,fits,slices,conditions,false); % I believe this is complete, but I have only tested it for fixG = false, fitPhase=false;
 %% Get horizontal shift off axis and Plot Linewidths
-plotLinewidths(signal,linewidths,slices,fits,axes,parameters,false)
+% plotLinewidths(plot2DFWM,linewidths,slices,fits,axes,parameters,false)
 %% Plot Inhomogenous and Homogenous Slices with Simultaneous Fits
-figure, 
-subplot(1,2,1)
-hold on
-plot(projections.Homo+freq(21)+refshift,slices.Homo);
-% plot(projections.Homo+freq(21)+refshift,fits.SHomo);
-set(gca,'FontSize',9);
-xlabel('\omega_t (meV)')
-axis square
-title(strcat('\gamma = ',num2str(linewidths.Simultaneous),' meV'))
-hold off
-subplot(1,2,2)
-hold on
-plot(projections.Inhomo+freq(21)+refshift,slices.Inhomo);
-plot(projections.Inhomo+freq(21)+refshift,fits.SInhomo);
-set(gca,'FontSize',9);
-xlabel('\omega_t (meV)')
-axis square
-hold off
-%%
-%homo max at 8968
+% figure, 
+% subplot(1,2,1)
+% hold on
+% plot(axes.Homo+freq(21)+refshift,slices.Homo);
+% % plot(axes.Homo+freq(21)+refshift,fits.SHomo);
+% set(gca,'FontSize',9);
+% xlabel('\omega_t (meV)')
+% axis square
+% title(strcat('\gamma = ',num2str(linewidths.Simultaneous),' meV'))
+% hold off
+% subplot(1,2,2)
+% hold on
+% plot(axes.Inhomo+freq(21)+refshift,slices.Inhomo);
+% plot(axes.Inhomo+freq(21)+refshift,fits.SInhomo);
+% set(gca,'FontSize',9);
+% xlabel('\omega_t (meV)')
+% axis square
+% hold off
 
